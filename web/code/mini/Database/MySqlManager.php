@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Mini\Database;
 
@@ -11,14 +11,14 @@ class MySqlManager implements Database
 {
     /**
      * Connection instances.
-     * 
+     *
      * @var array
      */
-    protected static $instances = [];
+    protected static array $instances = [];
 
     /**
      * Setup.
-     * 
+     *
      * @param array $config database config
      */
     public function __construct(array $config)
@@ -28,9 +28,9 @@ class MySqlManager implements Database
 
     /**
      * Setup database connection instances.
-     * 
+     *
      * @param array $config database config
-     * 
+     *
      * @return void
      */
     protected function setupConnections(array $config): void
@@ -57,9 +57,9 @@ class MySqlManager implements Database
 
     /**
      * Resolve which connection to use.
-     * 
+     *
      * @param string $method database method name
-     * 
+     *
      * @return MySql database connection instance
      */
     protected static function resolveInstance(string $method): MySql
@@ -78,9 +78,9 @@ class MySqlManager implements Database
     /**
      * Call a method on a specific connection instance.
      *
-     * @param string $method    method name
-     * @param array  $arguments method arguments
-     * 
+     * @param string $method method name
+     * @param array $arguments method arguments
+     *
      * @return mixed value
      */
     public function __call(string $method, array $arguments)
@@ -97,9 +97,9 @@ class MySqlManager implements Database
     /**
      * Call a static method on a specific connection instance.
      *
-     * @param string $method    method name
-     * @param array  $arguments method arguments
-     * 
+     * @param string $method method name
+     * @param array $arguments method arguments
+     *
      * @return mixed value
      */
     public static function __callStatic(string $method, array $arguments)

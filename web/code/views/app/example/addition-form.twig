@@ -1,0 +1,48 @@
+{% extends 'framework/app/base.twig' %}
+
+{% block content %}
+    <div class="container main">
+        <div class="text-center">
+            <h2>Bonus Page</h2>
+            <p>Enter two numbers to find out their sum.</p>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <form id="addition-form">
+                    <div class="form-group">
+                        <label for="addend-left">First Number</label>
+                        <input type="text" id="addend-left" class="form-control" name="addend_left" placeholder="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addend-right">Second Number</label>
+                        <input type="text" id="addend-right" class="form-control" name="addend_right" placeholder="20">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
+        <div class="text-center">
+            <div id="addition-results"></div>
+        </div>
+    </div>
+    <script>
+        document.querySelector('#addition-form').onsubmit = function (e) {
+            e.preventDefault();
+
+            const data = new FormData(e.target);
+
+            // Ensure every input has a value
+            for (var [key, value] of data.entries()) {
+                if (!value) {
+                    document.querySelector('#addition-form input[name="' + key + '"]').focus();
+                    return;
+                }
+            }
+
+            sendPost('addition', data, view => document.querySelector('#addition-results').innerHTML = view);
+        };
+    </script>
+{% endblock %}

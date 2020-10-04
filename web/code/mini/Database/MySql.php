@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Mini\Database;
 
@@ -15,35 +15,35 @@ class MySql implements Database
 {
     /**
      * Active database connection.
-     * 
-     * @var Mini\Database\MySqlConnection|null
+     *
+     * @var MySqlConnection|null
      */
-    protected $connection = null;
+    protected ?MySqlConnection $connection = null;
 
     /**
      * Affected rows.
-     * 
+     *
      * @var int
      */
-    protected $affected = 0;
+    protected int $affected = 0;
 
     /**
      * SQL statement handle.
-     * 
+     *
      * @var object|null
      */
-    protected $stmt = null;
+    protected ?object $stmt = null;
 
     /**
      * Transaction flag.
-     * 
+     *
      * @var bool
      */
-    protected $transaction = false;
+    protected bool $transaction = false;
 
     /**
      * Setup.
-     * 
+     *
      * @param MySqlConnection $connection database connection
      */
     public function __construct(MySqlConnection $connection)
@@ -53,11 +53,11 @@ class MySql implements Database
 
     /**
      * Execute a query.
-     * 
+     *
      * @param string $query query to execute
-     * 
+     *
      * @return mixed $results result set
-     * 
+     *
      * @throws Exception if the query fails to execute
      */
     public function query(string $query)
@@ -77,11 +77,11 @@ class MySql implements Database
 
     /**
      * Execute a select query.
-     * 
+     *
      * @param array $args query parameters
-     * 
+     *
      * @return array $results result set
-     * 
+     *
      * @throws Exception if the sql is empty
      * @throws Exception if the select query fails
      * @throws Exception if more than one row was returned when specified for only one
@@ -90,15 +90,15 @@ class MySql implements Database
     public function select(array $args): array
     {
         $results = [];
-        $rows    = false;
+        $rows = false;
 
         $config = [
-            'sql'         => false,
-            'inputs'      => false,
-            'title'       => false,
-            'noRowsOk'    => true,
+            'sql' => false,
+            'inputs' => false,
+            'title' => false,
+            'noRowsOk' => true,
             'assocResult' => true,
-            'singleRow'   => true
+            'singleRow' => true
         ];
 
         // Override
@@ -107,7 +107,7 @@ class MySql implements Database
         }
 
         if (!$config['sql']) {
-            throw new Exception($this->getQueryDescription($config) . 'Failed to find sql');
+            throw new Exception($this->getQueryDescription($config).'Failed to find sql');
         }
 
         try {
@@ -126,10 +126,10 @@ class MySql implements Database
                 // Save an extra step and/or cleanup markup (i.e. $results['myId'] vs $results[0]['myId'])
                 $results = $results[0];
             } else {
-                throw new Exception($this->getQueryDescription($config) . 'Failed to find single row');
+                throw new Exception($this->getQueryDescription($config).'Failed to find single row');
             }
         } elseif (!$rows && !$config['noRowsOk']) {
-            throw new Exception($this->getQueryDescription($config) . 'Failed to find rows');
+            throw new Exception($this->getQueryDescription($config).'Failed to find rows');
         }
 
         return $results;
@@ -138,9 +138,9 @@ class MySql implements Database
     /**
      * Execute a query. The type specified determines what is returned. Insert
      * queries will get the insert ID, whereas editing will get rows affected.
-     * 
+     *
      * @param array $args query parameters
-     * 
+     *
      * @return int $results insert ID (insert) or row count (update/delete)
      *
      * @throws Exception if the sql is empty
@@ -151,9 +151,9 @@ class MySql implements Database
         $results = false;
 
         $config = [
-            'sql'    => false,
+            'sql' => false,
             'inputs' => false,
-            'title'  => false
+            'title' => false
         ];
 
         // Override
@@ -190,12 +190,12 @@ class MySql implements Database
 
     /**
      * Check that a query affected a single row.
-     * 
-     * @param int  $affected    optional number of affected rows to expect
+     *
+     * @param int $affected optional number of affected rows to expect
      * @param bool $throwOnFail optional throw an exception if the validation fails
-     * 
+     *
      * @return bool $validated whether a single row was affected or not
-     * 
+     *
      * @throws Exception if specified and no single row affected
      */
     public function validateAffected(int $affected = 1, bool $throwOnFail = true): bool
@@ -204,7 +204,7 @@ class MySql implements Database
 
         if ($throwOnFail && !$validated) {
             throw new Exception(
-                'Failed to validate affected row(s). Affected: ' . $this->getAffected() . ', Expected: ' . $affected
+                'Failed to validate affected row(s). Affected: '.$this->getAffected().', Expected: '.$affected
             );
         }
 
@@ -214,9 +214,9 @@ class MySql implements Database
     /**
      * Get a prepared parameter string based off the number of values that
      * will get binded into the query.
-     * 
+     *
      * @param array $data the values that will be binded into the query
-     * 
+     *
      * @return string prepared parameter string
      */
     public function getPreparedParams(array $data): string
@@ -226,9 +226,9 @@ class MySql implements Database
 
     /**
      * Clean up special characters.
-     * 
+     *
      * @param string $value value to escape
-     * 
+     *
      * @return string escaped value
      */
     public function escape(string $value): string
@@ -238,7 +238,7 @@ class MySql implements Database
 
     /**
      * Get the generated ID from the last query statement.
-     * 
+     *
      * @return int auto-increment column ID
      */
     public function getInsertId(): int
@@ -248,7 +248,7 @@ class MySql implements Database
 
     /**
      * Get the number of rows from the last query statement.
-     * 
+     *
      * @return int count of rows
      */
     public function getAffected(): int
@@ -260,9 +260,9 @@ class MySql implements Database
      * Start a transaction (grouping of queries).
      *
      * Note: By default we use serializable but it can be overriden.
-     * 
+     *
      * @param string $isolationLevel optional isolation level override for the transaction
-     * 
+     *
      * @return void
      */
     public function startTransaction(string $isolationLevel = 'SERIALIZABLE'): void
@@ -277,9 +277,9 @@ class MySql implements Database
 
     /**
      * Complete a transaction (grouping of queries).
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws Exception if not within a transaction
      */
     public function commitTransaction(): void
@@ -295,9 +295,9 @@ class MySql implements Database
     /**
      * Void out a transaction (grouping of queries). This will reset the data
      * back to how it was before any queries occured.
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws Exception if not within a transaction
      */
     public function rollbackTransaction(): void
@@ -312,7 +312,7 @@ class MySql implements Database
 
     /**
      * Check if we are currently inside a transaction.
-     * 
+     *
      * @return bool flag if we are in a transaction or not
      */
     public function inTransaction(): bool
@@ -322,9 +322,9 @@ class MySql implements Database
 
     /**
      * Fetch the result set from the last query statement.
-     * 
+     *
      * @param bool $assoc optional flag to change result return type
-     * 
+     *
      * @return array $results result set
      */
     protected function getResults(bool $assoc = true): array
@@ -332,14 +332,14 @@ class MySql implements Database
         $fields = $results = [];
 
         $stmtResultMeta = $this->stmt->result_metadata();
-        
+
         while ($field = $stmtResultMeta->fetch_field()) {
-            $fieldName  = $field->name;
+            $fieldName = $field->name;
             $$fieldName = null;
 
             $fields[$fieldName] = &$$fieldName;
         }
-        
+
         call_user_func_array([$this->stmt, 'bind_result'], $fields);
 
         $numOfRows = $this->getStatementNumRows();
@@ -354,16 +354,17 @@ class MySql implements Database
                 }
             }
         }
-        
+
         return $results;
     }
 
     /**
      * Prepare a query, bind (possibly), and execute.
-     * 
+     *
      * @param array $config query config
-     * 
+     *
      * @return int affected/num rows
+     * @throws Exception
      */
     protected function prepareExecute(array $config): int
     {
@@ -378,33 +379,33 @@ class MySql implements Database
 
     /**
      * Prepare a query and create statement.
-     * 
+     *
      * @param string $sql query to prepare
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws Exception if the query could not be prepared
      */
     protected function prepare(string $sql): void
     {
         if (!$this->stmt = $this->connection->prepare($sql)) {
-            throw new Exception('Failed to prepare query :: ' . $this->connection->error);
+            throw new Exception('Failed to prepare query :: '.$this->connection->error);
         }
     }
 
     /**
-     * Execute a query and return rows. By default we store the result and 
+     * Execute a query and return rows. By default we store the result and
      * return row count versus affected rows.
-     * 
+     *
      * @return int row count
-     * 
+     *
      * @throws Exception if the query fails to execute
      * @throws Exception if no rows were found
      */
     protected function execute(): int
     {
         if (!$this->stmt->execute()) {
-            throw new Exception('Failed to execute query :: ' . $this->stmt->error);
+            throw new Exception('Failed to execute query :: '.$this->stmt->error);
         }
 
         if (!$this->stmt->store_result()) {
@@ -416,11 +417,11 @@ class MySql implements Database
 
     /**
      * Bind values to a prepared statement.
-     * 
+     *
      * @param array $parameters types of values to bind
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws Exception if no bind parameters were specified
      * @throws Exception if the bind parameter is of an unknown type
      * @throws Exception if the parameter could not be bound
@@ -452,7 +453,7 @@ class MySql implements Database
 
         // Variables to bind
         for ($i = 0; $i < count($parameters); $i++) {
-            $bind  = 'bind' . $i;
+            $bind = 'bind'.$i;
             $$bind = $parameters[$i];
 
             $binds[] = &$$bind;
@@ -465,7 +466,7 @@ class MySql implements Database
 
     /**
      * Close the statement connection.
-     * 
+     *
      * @return void
      */
     protected function close(): void
@@ -477,7 +478,7 @@ class MySql implements Database
 
     /**
      * Get the number of affected rows from the last query statement.
-     * 
+     *
      * @return int affected rows
      */
     protected function getStatementAffectedRows(): int
@@ -487,7 +488,7 @@ class MySql implements Database
 
     /**
      * Get the number of rows from the last query statement.
-     * 
+     *
      * @return int number of rows
      */
     protected function getStatementNumRows(): int
@@ -497,9 +498,9 @@ class MySql implements Database
 
     /**
      * Check if this query is an insert statement.
-     * 
+     *
      * @param array $config query config
-     * 
+     *
      * @return bool whether it is insert
      */
     protected function isInsertStatement(array $config): bool
@@ -511,7 +512,7 @@ class MySql implements Database
      * Check if the error is related to a database duplicate key error.
      *
      * @param Throwable $e exception
-     * 
+     *
      * @return bool whether the error is related to duplicate key
      */
     protected function isDuplicateInsertError(Throwable $e): bool
@@ -523,36 +524,36 @@ class MySql implements Database
      * Get the description for a query.
      *
      * @param array $config query config
-     * 
+     *
      * @return string query description
      */
     protected function getQueryDescription(array $config): string
     {
-        return $config['title'] ? $config['title'] . ' :: ' : '';
+        return $config['title'] ? $config['title'].' :: ' : '';
     }
 
     /**
      * Build a database error message.
-     * 
-     * @param Throwable $e      error object
-     * @param array     $config query config
+     *
+     * @param Throwable $e error object
+     * @param array $config query config
      *
      * @return void
-     * 
+     *
      * @throws Exception database exception
      */
     protected function throwDatabaseException(Throwable $e, array $config): void
     {
         $description = $this->getQueryDescription($config);
-        
+
         $errno = ($this->stmt && $this->stmt->errno) ? $this->stmt->errno : $this->connection->errno;
 
-        throw new Exception($description . '[' . $errno . '] :: ' . $e->getMessage());
+        throw new Exception($description.'['.$errno.'] :: '.$e->getMessage());
     }
 
     /**
      * Get the active connection.
-     * 
+     *
      * @return MySqlConnection connection
      */
     public function getConnection(): MySqlConnection

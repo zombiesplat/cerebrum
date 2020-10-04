@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Example\Controller;
 
@@ -17,49 +17,50 @@ class ExampleController extends Controller
 {
     /**
      * Example view model.
-     * 
-     * @var Example\Model\ExampleModel|null
+     *
+     * @var ExampleModel|null
      */
     protected $model = null;
 
     /**
      * Example view builder.
-     * 
-     * @var Example\View\ExampleView|null
+     *
+     * @var ExampleView|null
      */
     protected $view = null;
 
     /**
      * Setup.
-     * 
-     * @param ExampleModel $model example data
-     * @param ExampleView  $view  example view builder
      */
-    public function __construct(ExampleModel $model, ExampleView $view)
+    public function __construct()
     {
-        $this->model = $model;
-        $this->view  = $view;
+        $this->model = container(ExampleModel::class);;
+        $this->view = container(ExampleView::class);
     }
 
     /**
      * Create an example and display its data.
-     * 
+     *
      * @param Request $request http request
-     * 
+     *
      * @return string view template
+     * @throws BadInputException
+     * @throws \Exception
      */
     public function createExample(Request $request): string
     {
-        if (! $code = $request->request->get('code')){
+        if (!$code = $request->request->get('code')) {
             throw new BadInputException('Example code missing');
         }
 
-        if (! $description = $request->request->get('description')) {
+        if (!$description = $request->request->get('description')) {
             throw new BadInputException('Example description missing');
         }
-
-        return $this->view->get(
-            $this->model->create(now(), $code, $description)
-        );
+        $attributes = $request->request->all();
+        $attributes['created'] = now();
+        $this->model
+            ->fill($attributes)
+            ->insert();
+        return $this->view->get($this->model);
     }
 }

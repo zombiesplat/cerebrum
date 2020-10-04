@@ -3,6 +3,7 @@
 namespace Example\Tests\Traits;
 
 use Faker\Factory;
+use Faker\Generator;
 
 /**
  * Trait for using the Faker package. This allows for
@@ -15,9 +16,9 @@ trait FakerTrait
     /**
      * Faker instance.
      *
-     * @var Faker\Generator|null
+     * @var Generator|null
      */
-    protected $faker = null;
+    protected ?Generator $faker = null;
 
     /**
      * Setup up the Faker instance.

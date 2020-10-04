@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace Example\Tests\Unit\Controller;
 
+use Example\Model\ExampleModel;
 use Example\Tests\BaseCase;
+use Example\View\ExampleView;
 use Mini\Controller\Exception\BadInputException;
 
 /**
@@ -13,15 +15,30 @@ use Mini\Controller\Exception\BadInputException;
 class ExampleViewTest extends BaseCase
 {
     /**
+     * Reset the service containers
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        container()->setService(ExampleModel::class, new ExampleModel());
+        container()->setService(ExampleView::class, new ExampleView());
+    }
+
+    /**
      * Test getting an example view to display its data.
      * 
      * @return void
      */
     public function testGet(): void
     {
-        $this->mockDatabaseGetProcess();
+        $model = (new ExampleModel())->fill([
+            'id' => 1,
+            'created' => '2020-10-03 20:10:09',
+            'code' => 'TESTCODE',
+            'description' => 'Test description',
+        ]);
 
-        $view = $this->getClass('Example\View\ExampleView')->get(1);
+        $view = $this->getClass(ExampleView::class)->get($model);
 
         $this->assertNotEmpty($view);
         $this->assertIsString($view);
@@ -39,50 +56,9 @@ class ExampleViewTest extends BaseCase
     public function testGetErrorsOnUnknownExampleId(): void
     {
         $this->expectException(BadInputException::class);
-        
-        $this->mockDatabaseGetUnkownIdProcess();
 
-        $this->getClass('Example\View\ExampleView')->get(2);
-    }
+        $model = new ExampleModel();
 
-    /**
-     * Mock the database process for the example create endpoint.
-     *
-     * @return void
-     */
-    protected function mockDatabaseGetProcess(): void
-    {
-        $database = $this->getMock('Mini\Database\Database');
-
-        // Setup the database mock
-        $database->shouldReceive('select')
-            ->once()
-            ->withArgs($this->withDatabaseInput([1]))
-            ->andReturn([
-                'id'          => 1,
-                'created'     => '2020-07-14 12:00:00',
-                'code'        => 'TESTCODE',
-                'description' => 'Test description'
-            ]);
-
-        $this->setMockDatabase($database);
-    }
-
-    /**
-     * Mock the database process for the example create endpoint.
-     *
-     * @return void
-     */
-    protected function mockDatabaseGetUnkownIdProcess(): void
-    {
-        $database = $this->getMock('Mini\Database\Database');
-
-        // Setup the database mock
-        $database->shouldReceive('select')
-            ->once()
-            ->withArgs($this->withDatabaseInput([2]))
-            ->andReturn([]);
-
-        $this->setMockDatabase($database);
+        $this->getClass(ExampleView::class)->get($model);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Example\View;
 
@@ -13,39 +13,19 @@ use Mini\Controller\Exception\BadInputException;
 class ExampleView
 {
     /**
-     * Example data.
-     * 
-     * @var Example\Model\ExampleModel|null
-     */
-    protected $model = null;
-
-    /**
-     * Setup.
-     * 
-     * @param ExampleModel $model example data
-     */
-    public function __construct(ExampleModel $model)
-    {
-        $this->model = $model;
-    }
-
-    /**
      * Get the example view to display its data.
-     * 
-     * @param int $id example id
-     * 
+     *
+     * @param ExampleModel $model
      * @return string view template
      *
      * @throws BadInputException if no example data is returned
      */
-    public function get(int $id): string
+    public function get(ExampleModel $model): string
     {
-        $data = $this->model->get($id);
-
-        if (!$data) {
+        if (!$model->id) {
             throw new BadInputException('Unknown example ID');
         }
 
-        return view('app/example/detail', $data);
+        return view('app/example/detail', ['example' => $model]);
     }
 }

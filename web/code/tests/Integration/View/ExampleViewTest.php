@@ -4,7 +4,10 @@ declare(strict_types = 1);
 
 namespace Example\Tests\Integration\View;
 
+use Example\Model\ExampleModel;
 use Example\Tests\BaseCase;
+use Example\View\ExampleView;
+use Exception;
 use Mini\Controller\Exception\BadInputException;
 
 /**
@@ -26,8 +29,9 @@ class ExampleViewTest extends BaseCase
 
     /**
      * Test getting an example view to display its data.
-     * 
+     *
      * @return void
+     * @throws Exception
      */
     public function testGet(): void
     {
@@ -40,7 +44,9 @@ class ExampleViewTest extends BaseCase
             ]
         ]);
 
-        $view = $this->getClass('Example\View\ExampleView')->get(1);
+        $model = (new ExampleModel())->get(1);
+
+        $view = $this->getClass(ExampleView::class)->get($model);
 
         $this->assertNotEmpty($view);
         $this->assertIsString($view);
@@ -52,13 +58,15 @@ class ExampleViewTest extends BaseCase
 
     /**
      * Test getting an example view errors on unknown example ID.
-     * 
+     *
      * @return void
+     * @throws Exception
      */
     public function testGetErrorsOnUnknownExampleId(): void
     {
         $this->expectException(BadInputException::class);
 
-        $this->getClass('Example\View\ExampleView')->get(1);
+        $model = (new ExampleModel())->get(999);
+        $this->getClass('Example\View\ExampleView')->get($model);
     }
 }

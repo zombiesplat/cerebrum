@@ -1,77 +1,46 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Example\Model;
 
-use Mini\Model\Model;
+use Mini\Model\AbstractModel;
 
 /**
  * Example data.
+ *
+ * @property int $id
+ * @property int $example_id
+ * @property string $created
+ * @property string $code
+ * @property string $description
+ * @method fill(array $attributes) : AbstractModel
+ * @method select(int $id) : array
+ * @method insert(): int
  */
-class ExampleModel extends Model
+class ExampleModel extends AbstractModel
 {
     /**
-     * Get example data by ID.
-     *
-     * @param int $id example id
-     *  
-     * @return array example data
+     * Base table for model
+     * @var string
      */
-    public function get(int $id): array
-    {
-        $sql = '
-            SELECT
-                example_id AS "id",
-                created,
-                code,
-                description
-            FROM
-                ' . getenv('DB_SCHEMA') . '.master_example
-            WHERE
-                example_id = ?';
-
-        return $this->db->select([
-            'title'  => 'Get example data',
-            'sql'    => $sql,
-            'inputs' => [$id]
-        ]);
-    }
+    protected string $table = 'master_example';
 
     /**
-     * Create an example.
+     * Model's Primary Key
      *
-     * @param string $created     example created on
-     * @param string $code        example code
-     * @param string $description example description
-     *  
-     * @return int example id
+     * @var string
      */
-    public function create(string $created, string $code, string $description): int
-    {
-        $sql = '
-            INSERT INTO
-                ' . getenv('DB_SCHEMA') . '.master_example
-            (
-                created,
-                code,
-                description
-            )
-            VALUES
-            (?,?,?)';
+    protected string $primaryKey = 'example_id';
 
-        $id = $this->db->statement([
-            'title'  => 'Create example',
-            'sql'    => $sql,
-            'inputs' => [
-                $created,
-                $code,
-                $description
-            ]
-        ]);
-
-        $this->db->validateAffected();
-
-        return $id;
-    }
+    /**
+     * The model's columns in the database
+     *
+     * @var array
+     */
+    protected array $fillable = [
+        'created',
+        'code',
+        'description',
+    ];
 }

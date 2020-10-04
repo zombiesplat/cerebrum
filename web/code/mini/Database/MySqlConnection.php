@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Mini\Database;
 
@@ -14,28 +14,28 @@ class MySqlConnection implements Database
 {
     /**
      * Database config.
-     * 
+     *
      * @var array
      */
-    protected $config = [];
+    protected array $config = [];
 
     /**
      * Active database connection.
-     * 
+     *
      * @var mysqli|null
      */
-    protected $connection = null;
+    protected ?mysqli $connection = null;
 
     /**
      * Flag to check if we are connected to a database.
-     * 
+     *
      * @var bool
      */
-    protected $connected = false;
+    protected bool $connected = false;
 
     /**
      * Setup.
-     * 
+     *
      * @param array $config database config
      */
     public function __construct(array $config)
@@ -45,7 +45,7 @@ class MySqlConnection implements Database
 
     /**
      * Check if we are connected to the database.
-     * 
+     *
      * @return bool whether we are connected or not
      */
     public function connected(): bool
@@ -55,9 +55,9 @@ class MySqlConnection implements Database
 
     /**
      * Open a new connection to the server.
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws Exception if the connection could not be established
      * @throws Exception if failing to set the db charset
      */
@@ -78,7 +78,7 @@ class MySqlConnection implements Database
                 $this->config['user'],
                 $this->config['pass'],
                 $this->config['schema'],
-                (int) $this->config['port'],
+                (int)$this->config['port'],
                 $this->config['socket']
             );
 
@@ -102,9 +102,9 @@ class MySqlConnection implements Database
 
     /**
      * Verify the connection charset.
-     * 
+     *
      * @return void
-     * 
+     *
      * @throws Exception if failing to set the db charset
      */
     protected function verifyCharset(): void
@@ -113,7 +113,7 @@ class MySqlConnection implements Database
         if ($this->config['charset'] !== $this->connection->character_set_name()) {
             // It is not the same, attempt to reset it
             if (!$this->connection->set_charset($this->config['charset'])) {
-                throw new Exception('Error setting database charset: ' . $this->config['charset']);
+                throw new Exception('Error setting database charset: '.$this->config['charset']);
             }
         }
     }
@@ -122,7 +122,7 @@ class MySqlConnection implements Database
      * Get a member variable from the active connection.
      *
      * @param string $name connection member variable
-     * 
+     *
      * @return mixed value
      */
     public function __get(string $name)
@@ -133,10 +133,11 @@ class MySqlConnection implements Database
     /**
      * Call a method on the active connection.
      *
-     * @param string $method    method name
-     * @param array  $arguments method arguments
-     * 
+     * @param string $method method name
+     * @param array $arguments method arguments
+     *
      * @return mixed value
+     * @throws Exception
      */
     public function __call(string $method, array $arguments)
     {

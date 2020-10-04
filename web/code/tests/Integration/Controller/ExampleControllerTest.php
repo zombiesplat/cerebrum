@@ -4,7 +4,10 @@ declare(strict_types = 1);
 
 namespace Example\Tests\Integration\Controller;
 
+use Example\Controller\ExampleController;
+use Example\Model\ExampleModel;
 use Example\Tests\BaseCase;
+use Example\View\ExampleView;
 use Mini\Http\Request;
 
 /**
@@ -20,7 +23,9 @@ class ExampleControllerTest extends BaseCase
     public function setUp(): void
     {
         parent::setUp();
-
+        container()->setService(ExampleModel::class, new ExampleModel());
+        container()->setService(ExampleView::class, new ExampleView());
+        container()->setService(ExampleController::class, new ExampleController());
         $this->truncateTable('master_example');
     }
 
@@ -36,7 +41,7 @@ class ExampleControllerTest extends BaseCase
             'description' => 'Test description'
         ]);
 
-        $response = $this->getClass('Example\Controller\ExampleController')->createExample($request);
+        $response = $this->getClass(ExampleController::class)->createExample($request);
 
         $this->assertNotEmpty($response);
         $this->assertIsString($response);

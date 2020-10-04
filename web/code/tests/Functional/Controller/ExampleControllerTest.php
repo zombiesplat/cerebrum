@@ -4,7 +4,10 @@ declare(strict_types = 1);
 
 namespace Example\Tests\Functional\Controller;
 
+use Example\Controller\ExampleController;
+use Example\Model\ExampleModel;
 use Example\Tests\BaseCase;
+use Example\View\ExampleView;
 
 /**
  * Example entrypoint logic test.
@@ -18,6 +21,9 @@ class ExampleControllerTest extends BaseCase
      */
     public function setUp(): void
     {
+        container()->setService(ExampleModel::class, new ExampleModel());
+        container()->setService(ExampleView::class, new ExampleView());
+        container()->setService(ExampleController::class, new ExampleController());
         parent::setUp();
 
         $this->truncateTable('master_example');
